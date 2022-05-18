@@ -1,0 +1,151 @@
+// Copyright 2022 The sacloud/iaas-api-go Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package webaccel_test
+
+import (
+	"context"
+	"net/http"
+	"os"
+	"strings"
+	"testing"
+
+	client "github.com/sacloud/api-client-go"
+	"github.com/sacloud/packages-go/testutil"
+	"github.com/sacloud/webaccel-api-go"
+	"github.com/stretchr/testify/require"
+)
+
+func checkEnv(t *testing.T, requireEnvs ...string) {
+	if !testutil.IsAccTest() {
+		t.Skip("environment variables required: TESTACC")
+	}
+	testutil.PreCheckEnvsFunc("SAKURACLOUD_ACCESS_TOKEN", "SAKURACLOUD_ACCESS_TOKEN_SECRET")(t)
+	testutil.PreCheckEnvsFunc(requireEnvs...)(t)
+}
+
+func testClient() webaccel.API {
+	return webaccel.NewOp(&webaccel.Client{
+		Options: &client.Options{
+			HttpClient: &http.Client{},
+		},
+	})
+}
+
+func TestOp_List(t *testing.T) {
+	checkEnv(t)
+
+	client := testClient()
+	found, err := client.List(context.Background())
+	require.NoError(t, err)
+
+	if found.Count == 0 {
+		t.Skip("webaccel doesn't have any sites")
+	}
+
+	site := found.Sites[0]
+	require.NotEmpty(t, site.ID)
+	require.NotEmpty(t, site.Name)
+	require.NotEmpty(t, site.DomainType)
+	require.NotEmpty(t, site.Domain)
+	require.NotEmpty(t, site.Subdomain)
+	require.NotEmpty(t, site.ASCIIDomain)
+	require.NotEmpty(t, site.Origin)
+	require.NotEmpty(t, site.Status)
+	require.NotEmpty(t, site.CreatedAt)
+}
+
+func TestOp_Read(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	read, err := client.Read(context.Background(), siteId)
+
+	require.NoError(t, err)
+	require.Equal(t, read.ID, siteId)
+}
+
+func TestWebAccelOp_Cert(t *testing.T) {
+	envKeys := []string{
+		"SAKURACLOUD_WEBACCEL_SITE_ID",
+		"SAKURACLOUD_WEBACCEL_CERT",
+		"SAKURACLOUD_WEBACCEL_KEY",
+		"SAKURACLOUD_WEBACCEL_CERT_UPD",
+		"SAKURACLOUD_WEBACCEL_KEY_UPD",
+	}
+	checkEnv(t, envKeys...)
+
+	client := testClient()
+	ctx := context.Background()
+	id := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	crt := os.Getenv("SAKURACLOUD_WEBACCEL_CERT")
+	key := os.Getenv("SAKURACLOUD_WEBACCEL_KEY")
+	crtUpd := os.Getenv("SAKURACLOUD_WEBACCEL_CERT_UPD")
+	keyUpd := os.Getenv("SAKURACLOUD_WEBACCEL_KEY_UPD")
+
+	// create certs
+	_, err := client.CreateCertificate(ctx, id, &webaccel.CreateOrUpdateCertificateRequest{
+		CertificateChain: crt,
+		Key:              key,
+	})
+	require.NoError(t, err)
+
+	// update certs
+	certs, err := client.UpdateCertificate(ctx, id, &webaccel.CreateOrUpdateCertificateRequest{
+		CertificateChain: crtUpd,
+		Key:              keyUpd,
+	})
+	require.NoError(t, err)
+
+	// read cert
+	read, err := client.ReadCertificate(ctx, id)
+	require.NoError(t, err)
+
+	require.Equal(t, certs, read)
+
+	// delete certs
+	err = client.DeleteCertificate(ctx, id)
+	require.NoError(t, err)
+
+	// read again
+	read, err = client.ReadCertificate(ctx, id)
+	require.NoError(t, err)
+	require.Empty(t, read.Current)
+	require.NotEmpty(t, read.Old)
+}
+
+func TestOp_DeleteAllCache(t *testing.T) {
+	testutil.PreCheckEnvsFunc("SAKURACLOUD_WEBACCEL_DOMAIN")(t)
+
+	client := testClient()
+
+	// delete cache
+	err := client.DeleteAllCache(context.Background(), &webaccel.DeleteAllCacheRequest{
+		Domain: os.Getenv("SAKURACLOUD_WEBACCEL_DOMAIN"),
+	})
+	require.NoError(t, err)
+}
+
+func TestOp_DeleteCache(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_URLS")
+
+	client := testClient()
+	result, err := client.DeleteCache(context.Background(), &webaccel.DeleteCacheRequest{
+		URL: strings.Split(os.Getenv("SAKURACLOUD_WEBACCEL_URLS"), ","),
+	})
+
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+}
