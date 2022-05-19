@@ -15,7 +15,53 @@
 #### webaccel-api-goを利用したクライアントコードの例
 
 ```go
-// TODO 後で書く
+package example
+
+import (
+	"context"
+	"log"
+
+	"github.com/sacloud/webaccel-api-go"
+)
+
+func Example() {
+	// デフォルトではusacloudプロファイルや環境変数が利用される。
+	// パラメータを指定することで上書きしたり無効化したりできる
+	client := &webaccel.Client{
+		//Profile:           "default",
+		//AccessToken:       "token",
+		//AccessTokenSecret: "secret",
+		//DisableProfile:    false,
+		//DisableEnv:        false,
+	}
+	op := webaccel.NewOp(client)
+
+	// サイト一覧
+	found, err := op.List(context.Background())
+	if err != nil {
+		panic(err)
+	}
+	log.Println(found)
+
+	// 全キャッシュ削除
+	deleteAllCacheRequest := &webaccel.DeleteAllCacheRequest{
+		Domain: "example.com",
+	}
+	if err := op.DeleteAllCache(context.Background(), deleteAllCacheRequest); err != nil {
+		panic(err)
+	}
+
+	// URLごとにキャッシュ削除
+	deleteCacheRequest := &webaccel.DeleteCacheRequest{
+		URL: []string{
+			"https://example.com/url1",
+			"https://example.com/url2",
+		},
+	}
+	if _, err := op.DeleteCache(context.Background(), deleteCacheRequest); err != nil {
+		panic(err)
+	}
+}
 ```
 
 ## Installation
