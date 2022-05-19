@@ -16,5 +16,5 @@ package webaccel
 
 var (
 	// Version app version
-	Version = "0.0.1-dev"
+	Version = "1.0.0"
 )
