@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 type APICaller interface {
@@ -211,4 +212,29 @@ func (o *Op) DeleteCache(ctx context.Context, param *DeleteCacheRequest) ([]*Del
 		return nil, err
 	}
 	return results.Results, nil
+}
+
+// MonthlyUsage クラウドアカウントに登録されている全サイトの月別使用量を取得する。
+//
+// targetフィールドの値は「yyyymm」形式で対象年月を指定する。
+// (例: 2021年02月の場合は、「202102」と指定。)
+// 指定がない場合は、今月の月別使用量を取得する。
+func (o *Op) MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageResults, error) {
+	params := url.Values{
+		"target": {targetYM},
+	}
+	url := o.Client.RootURL() + "monthlyusage?" + params.Encode()
+
+	// do request
+	data, err := o.Client.Do(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	var results MonthlyUsageResults
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return &results, nil
 }
