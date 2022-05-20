@@ -10,8 +10,6 @@
 
 従来はiaas-api-go(libsacloud v2)で提供していたAPIライブラリを独立したリポジトリとして切り出したものです。  
 
-:warning: webaccel-api-goは現在開発中です。
-
 #### webaccel-api-goを利用したクライアントコードの例
 
 ```go
