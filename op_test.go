@@ -77,6 +77,22 @@ func TestOp_Read(t *testing.T) {
 	require.Equal(t, read.ID, siteId)
 }
 
+func TestOp_Update(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	name := testutil.RandomName("webaccel-api-go-test-", 8, testutil.CharSetAlpha)
+	updated, err := client.Update(context.Background(), siteId, &webaccel.UpdateSiteRequest{
+		Name:        name,
+		VarySupport: webaccel.VarySupportDisabled,
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, updated.Name, name)
+	require.Equal(t, updated.VarySupport, webaccel.VarySupportEnabled)
+}
+
 func TestWebAccelOp_Cert(t *testing.T) {
 	envKeys := []string{
 		"SAKURACLOUD_WEBACCEL_SITE_ID",

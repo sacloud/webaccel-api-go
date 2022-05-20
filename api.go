@@ -20,6 +20,7 @@ import "context"
 type API interface {
 	List(ctx context.Context) (*ListSitesResult, error)
 	Read(ctx context.Context, id string) (*Site, error)
+	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
 	ReadCertificate(ctx context.Context, id string) (*Certificates, error)
 	CreateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error)
 	UpdateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error)
