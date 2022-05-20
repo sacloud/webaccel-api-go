@@ -18,14 +18,33 @@ import "time"
 
 // Site サイト
 type Site struct {
-	ID                 string
-	Name               string
-	DomainType         string `validate:"oneof=own_domain subdomain"`
-	Domain             string
-	Subdomain          string
-	ASCIIDomain        string
-	Origin             string
-	HostHeader         string
+	ID   string
+	Name string
+
+	DomainType      string `validate:"oneof=own_domain subdomain"`
+	Domain          string
+	Subdomain       string
+	ASCIIDomain     string
+	RequestProtocol string // 0:http/https, 1:httpsのみ, 2:httpsにリダイレクト
+	DefaultCacheTTL int    `validate:"min=-1,max=604800"` // -1:無効, 0 ～ 604800 の範囲内の数値: デフォルトのキャッシュ期間(秒)
+	VarySupport     string // 0:無効, 1:有効
+
+	OriginType     string // 0:ウェブサーバ, 1:オブジェクトストレージ
+	Origin         string
+	OriginProtocol string
+	HostHeader     string
+
+	// オブジェクトストレージをオリジンにする場合
+	BucketName string
+	S3Endpoint string
+	S3Region   string
+	DocIndex   string // 0:無効, 1:有効
+
+	// CORSRules ルール一覧、設定されている場合単一要素を持つ配列となる
+	// NOTE: List()だと空、Read()でのみ参照可能
+	CORSRules         []*CORSRule
+	OnetimeURLSecrets []string
+
 	Status             string `validate:"oneof=enabled disabled"`
 	HasCertificate     bool
 	HasOldCertificate  bool
@@ -33,4 +52,10 @@ type Site struct {
 	CertValidNotBefore int64
 	CertValidNotAfter  int64
 	CreatedAt          time.Time
+}
+
+// CORSRule .
+type CORSRule struct {
+	AllowsAnyOrigin bool     // trueの場合全オリジンを許可
+	AllowedOrigins  []string `validate:"omitempty,max=4"`
 }

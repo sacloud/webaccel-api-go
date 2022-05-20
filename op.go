@@ -37,7 +37,9 @@ func NewOp(caller APICaller) API {
 	return &Op{Client: caller}
 }
 
-// List is API call
+// List サイト一覧
+//
+// NOTE: 各サイトのCORSRulesはnullになる点に注意
 func (o *Op) List(ctx context.Context) (*ListSitesResult, error) {
 	url := o.Client.RootURL() + "site"
 
@@ -58,7 +60,7 @@ func (o *Op) List(ctx context.Context) (*ListSitesResult, error) {
 	return &results, nil
 }
 
-// Read is API call
+// Read サイト詳細
 func (o *Op) Read(ctx context.Context, id string) (*Site, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s", id)
 
@@ -82,7 +84,7 @@ func (o *Op) Read(ctx context.Context, id string) (*Site, error) {
 	return results.Site, nil
 }
 
-// ReadCertificate is API call
+// ReadCertificate サイト証明書の参照
 func (o *Op) ReadCertificate(ctx context.Context, id string) (*Certificates, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
 
@@ -107,7 +109,7 @@ func (o *Op) ReadCertificate(ctx context.Context, id string) (*Certificates, err
 	return results.Certificate, nil
 }
 
-// CreateCertificate is API call
+// CreateCertificate サイトに証明書を登録
 func (o *Op) CreateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
 
@@ -135,7 +137,7 @@ func (o *Op) CreateCertificate(ctx context.Context, id string, param *CreateOrUp
 	return results.Certificate, nil
 }
 
-// UpdateCertificate is API call
+// UpdateCertificate サイトの証明書を更新
 func (o *Op) UpdateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
 
@@ -163,7 +165,7 @@ func (o *Op) UpdateCertificate(ctx context.Context, id string, param *CreateOrUp
 	return results.Certificate, nil
 }
 
-// DeleteCertificate is API call
+// DeleteCertificate サイトの証明書を削除
 func (o *Op) DeleteCertificate(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
 
@@ -175,7 +177,7 @@ func (o *Op) DeleteCertificate(ctx context.Context, id string) error {
 	return err
 }
 
-// DeleteAllCache is API call
+// DeleteAllCache 全キャッシュ削除
 func (o *Op) DeleteAllCache(ctx context.Context, param *DeleteAllCacheRequest) error {
 	url := o.Client.RootURL() + "deleteallcache"
 
@@ -190,7 +192,7 @@ func (o *Op) DeleteAllCache(ctx context.Context, param *DeleteAllCacheRequest) e
 	return err
 }
 
-// DeleteCache is API call
+// DeleteCache URLごとにキャッシュ削除
 func (o *Op) DeleteCache(ctx context.Context, param *DeleteCacheRequest) ([]*DeleteCacheResult, error) {
 	url := o.Client.RootURL() + "deletecache"
 
