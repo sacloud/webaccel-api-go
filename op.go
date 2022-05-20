@@ -85,6 +85,33 @@ func (o *Op) Read(ctx context.Context, id string) (*Site, error) {
 	return results.Site, nil
 }
 
+// Update サイト更新
+func (o *Op) Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s", id)
+
+	// build request body
+	type updateRequest struct {
+		Site *UpdateSiteRequest
+	}
+	body := &updateRequest{Site: param}
+
+	// do request
+	data, err := o.Client.Do(ctx, "PUT", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type updateResult struct {
+		Site *Site
+	}
+	var results updateResult
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return results.Site, nil
+}
+
 // ReadCertificate サイト証明書の参照
 func (o *Op) ReadCertificate(ctx context.Context, id string) (*Certificates, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
