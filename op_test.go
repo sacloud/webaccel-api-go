@@ -149,3 +149,15 @@ func TestOp_DeleteCache(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
 }
+
+func TestOp_MonthlyUsage(t *testing.T) {
+	checkEnv(t)
+
+	client := testClient()
+	results, err := client.MonthlyUsage(context.Background(), "")
+
+	require.NoError(t, err)
+	require.NotEmpty(t, results.Year)
+	require.NotEmpty(t, results.Month)
+	require.NotEmpty(t, results.MonthlyUsages)
+}

@@ -26,4 +26,5 @@ type API interface {
 	DeleteCertificate(ctx context.Context, id string) error
 	DeleteAllCache(ctx context.Context, param *DeleteAllCacheRequest) error
 	DeleteCache(ctx context.Context, param *DeleteCacheRequest) ([]*DeleteCacheResult, error)
+	MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageResults, error)
 }
