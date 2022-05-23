@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	client "github.com/sacloud/api-client-go"
+	"github.com/sacloud/packages-go/pointer"
 	"github.com/sacloud/packages-go/testutil"
 	"github.com/sacloud/webaccel-api-go"
 	"github.com/stretchr/testify/require"
@@ -84,13 +85,19 @@ func TestOp_Update(t *testing.T) {
 	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
 	name := testutil.RandomName("webaccel-api-go-test-", 8, testutil.CharSetAlpha)
 	updated, err := client.Update(context.Background(), siteId, &webaccel.UpdateSiteRequest{
-		Name:        name,
-		VarySupport: webaccel.VarySupportDisabled,
+		Name:              name,
+		VarySupport:       webaccel.VarySupportDisabled,
+		CORSRules:         &[]*webaccel.CORSRule{},
+		OnetimeURLSecrets: &[]string{},
+		DefaultCacheTTL:   pointer.NewInt(0),
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, updated.Name, name)
-	require.Equal(t, updated.VarySupport, webaccel.VarySupportEnabled)
+	require.Equal(t, updated.VarySupport, webaccel.VarySupportDisabled)
+	require.Empty(t, updated.CORSRules)
+	require.Empty(t, updated.OnetimeURLSecrets)
+	require.Equal(t, updated.DefaultCacheTTL, 0)
 }
 
 func TestWebAccelOp_Cert(t *testing.T) {
