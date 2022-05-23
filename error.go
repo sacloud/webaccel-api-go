@@ -16,8 +16,22 @@ package webaccel
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 )
+
+// IsNotFoundError 指定のerrorがAPI呼び出し時の404エラーであるか判定
+func IsNotFoundError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if apiError, ok := err.(APIError); ok {
+		return apiError.ResponseCode() == http.StatusNotFound
+	}
+
+	return false
+}
 
 // APIErrorResponse APIエラー型
 type APIErrorResponse struct {
