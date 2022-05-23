@@ -14,12 +14,34 @@
 
 package webaccel
 
-import "time"
+import (
+	"encoding/json"
+	"strings"
+	"time"
+)
 
 // Certificates 証明書
 type Certificates struct {
 	Current *CurrentCertificate
 	Old     []*OldCertificate
+}
+
+// UnmarshalJSON JSONアンマーシャル(配列、オブジェクトが混在するためここで対応)
+func (w *Certificates) UnmarshalJSON(data []byte) error {
+	targetData := strings.Replace(strings.Replace(string(data), " ", "", -1), "\n", "", -1)
+	if targetData == `[]` {
+		return nil
+	}
+
+	type alias Certificates
+
+	var tmp alias
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+
+	*w = Certificates(tmp)
+	return nil
 }
 
 // CurrentCertificate 現在有効な証明書
