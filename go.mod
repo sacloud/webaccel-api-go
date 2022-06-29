@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/sacloud/api-client-go v0.1.0
 	github.com/sacloud/packages-go v0.0.3
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.5
 )
 
 require (
@@ -19,5 +19,5 @@ require (
 	github.com/sacloud/go-http v0.1.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
