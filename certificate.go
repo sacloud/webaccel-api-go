@@ -28,7 +28,7 @@ type Certificates struct {
 
 // UnmarshalJSON JSONアンマーシャル(配列、オブジェクトが混在するためここで対応)
 func (w *Certificates) UnmarshalJSON(data []byte) error {
-	targetData := strings.Replace(strings.Replace(string(data), " ", "", -1), "\n", "", -1)
+	targetData := strings.ReplaceAll(strings.ReplaceAll(string(data), " ", ""), "\n", "")
 	if targetData == `[]` {
 		return nil
 	}

@@ -1,6 +1,6 @@
 module github.com/sacloud/webaccel-api-go
 
-go 1.17
+go 1.18
 
 require (
 	github.com/sacloud/api-client-go v0.1.0
