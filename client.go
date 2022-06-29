@@ -135,7 +135,7 @@ func (c *Client) Do(ctx context.Context, method, uri string, body interface{}) (
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close() // nolint - ignore error
+	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
