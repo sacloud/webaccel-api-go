@@ -74,6 +74,6 @@ Then import the `webaccel` package into your own code.
 
 ## License
 
-`webaccel-api-go` Copyright 2022 The webaccel-api-go authors.
+`webaccel-api-go` Copyright 2022-2023 The webaccel-api-go authors.
 
 This project is published under [Apache 2.0 License](LICENSE).
