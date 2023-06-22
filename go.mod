@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/sacloud/api-client-go v0.2.8
 	github.com/sacloud/packages-go v0.0.9
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
