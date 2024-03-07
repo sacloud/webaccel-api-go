@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/sacloud/api-client-go v0.2.10
 	github.com/sacloud/packages-go v0.0.10
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
