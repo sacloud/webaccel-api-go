@@ -112,6 +112,63 @@ func (o *Op) Update(ctx context.Context, id string, param *UpdateSiteRequest) (*
 	return results.Site, nil
 }
 
+// ReadACL サイトのACL取得
+func (o *Op) ReadACL(ctx context.Context, id string) (*ACLResult, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/acl", id)
+
+	// build request body
+	var body interface{}
+
+	// do request
+	data, err := o.Client.Do(ctx, "GET", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	var result ACLResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// UpsertACL サイトのACLの登録/更新
+func (o *Op) UpsertACL(ctx context.Context, id string, acl string) (*ACLResult, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/acl", id)
+
+	// build request body
+	type upsertACLRequest struct {
+		ACL string `validate:"required"`
+	}
+	body := &upsertACLRequest{ACL: acl}
+
+	// do request
+	data, err := o.Client.Do(ctx, "PUT", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	var result ACLResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// DeleteACL サイトのACLの削除
+func (o *Op) DeleteACL(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/acl", id)
+
+	// build request body
+	var body interface{}
+
+	// do request
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	return err
+}
+
 // ReadCertificate サイト証明書の参照
 func (o *Op) ReadCertificate(ctx context.Context, id string) (*Certificates, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
