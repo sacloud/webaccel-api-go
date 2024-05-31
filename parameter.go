@@ -72,3 +72,7 @@ type UpdateSiteRequest struct {
 	AccessKeyID     string `json:",omitempty"`
 	SecretAccessKey string `json:",omitempty"`
 }
+
+type ACLResult struct {
+	ACL string
+}

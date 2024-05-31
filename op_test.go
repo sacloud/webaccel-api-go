@@ -100,6 +100,45 @@ func TestOp_Update(t *testing.T) {
 	require.Equal(t, updated.DefaultCacheTTL, 0)
 }
 
+func TestWebAccelOp_ACL(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	ctx := context.Background()
+
+	t.Run("create ACL", func(t *testing.T) {
+		acl := "deny 192.0.2.5/25\ndeny 198.51.100.0\nallow all"
+		result, err := client.UpsertACL(ctx, siteId, acl)
+
+		require.NoError(t, err)
+		require.Equal(t, acl, result.ACL)
+	})
+	t.Run("read ACL", func(t *testing.T) {
+		acl := "deny 192.0.2.5/25\ndeny 198.51.100.0\nallow all"
+		result, err := client.ReadACL(ctx, siteId)
+
+		require.NoError(t, err)
+		require.Equal(t, acl, result.ACL)
+	})
+	t.Run("update ACL", func(t *testing.T) {
+		acl := "allow 192.0.2.5/25\nallow 198.51.100.0\ndeny all"
+		result, err := client.UpsertACL(ctx, siteId, acl)
+
+		require.NoError(t, err)
+		require.Equal(t, acl, result.ACL)
+	})
+	t.Run("delete ACL", func(t *testing.T) {
+		if err := client.DeleteACL(ctx, siteId); err != nil {
+			t.Fatal("got unexpected error", err)
+		}
+
+		result, err := client.ReadACL(ctx, siteId)
+		require.NoError(t, err)
+		require.Empty(t, result.ACL)
+	})
+}
+
 func TestWebAccelOp_Cert(t *testing.T) {
 	envKeys := []string{
 		"SAKURACLOUD_WEBACCEL_SITE_ID",

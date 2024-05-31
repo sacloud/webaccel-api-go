@@ -21,6 +21,9 @@ type API interface {
 	List(ctx context.Context) (*ListSitesResult, error)
 	Read(ctx context.Context, id string) (*Site, error)
 	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
+	ReadACL(ctx context.Context, id string) (*ACLResult, error)
+	UpsertACL(ctx context.Context, id string, acl string) (*ACLResult, error)
+	DeleteACL(ctx context.Context, id string) error
 	ReadCertificate(ctx context.Context, id string) (*Certificates, error)
 	CreateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error)
 	UpdateCertificate(ctx context.Context, id string, param *CreateOrUpdateCertificateRequest) (*Certificates, error)
