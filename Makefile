@@ -1,5 +1,5 @@
 #
-# Copyright 2022-2023 The webaccel-api-go authors
+# Copyright 2022-2025 The webaccel-api-go authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 #
 #====================
 AUTHOR         ?= The sacloud/webaccel-api-go authors
-COPYRIGHT_YEAR ?= 2022-2023
+COPYRIGHT_YEAR ?= 2022-2025
 
 include includes/go/common.mk
 #====================
