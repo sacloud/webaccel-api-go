@@ -51,7 +51,7 @@ type CreateSiteRequest struct {
 	// 「オリジン種別」に関係なく設定できる共通項目
 	Name            string `json:",omitempty"`
 	OriginType      string `json:",omitempty" validate:"omitempty,oneof=0 1"` // 0:ウェブサーバ, 1:オブジェクトストレージ
-	ASCIIDomain     string `json:",omitempty" validate:"omitempty"`           // 独自ドメインを設定する場合のみ
+	Domain     string `json:",omitempty" validate:"omitempty"`           // 独自ドメインを設定する場合のみ
 	DomainType      string `json:",omitempty" validate:"omitempty,oneof=own_domain subdomain"`
 	RequestProtocol string `json:",omitempty" validate:"omitempty,oneof=0 1 2"` // 0:http/https, 1:httpsのみ, 2:httpsにリダイレクト
 	OriginProtocol  string `json:",omitempty" validate:"omitempty,oneof=http https"`
