@@ -38,6 +38,35 @@ func NewOp(caller APICaller) API {
 	return &Op{Client: caller}
 }
 
+// Create 新規サイトの作成
+//
+// NOTE: undocumented resource
+func (o *Op) Create(ctx context.Context, param *CreateSiteRequest) (*Site, error) {
+	url := o.Client.RootURL() + "site"
+
+	// build request body
+	type createRequest struct {
+		Site *CreateSiteRequest
+	}
+	body := &createRequest{Site: param}
+
+	// do request
+	data, err := o.Client.Do(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type createResult struct {
+		Site *Site
+	}
+	var results createResult
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return results.Site, nil
+}
+
 // List サイト一覧
 //
 // NOTE: 各サイトのCORSRulesはnullになる点に注意
@@ -106,6 +135,36 @@ func (o *Op) Update(ctx context.Context, id string, param *UpdateSiteRequest) (*
 		Site *Site
 	}
 	var results updateResult
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return results.Site, nil
+}
+
+// UpdateStatus サイト有効化状態の更新
+//
+// NOTE: undocumented resource
+func (o *Op) UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error) {
+
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/status", id)
+
+	// build request body
+	type updateStatusRequest struct {
+		Site *UpdateSiteStatusRequest
+	}
+	body := &updateStatusRequest{Site: param}
+
+	// do request
+	data, err := o.Client.Do(ctx, "PUT", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type updateStatusResult struct {
+		Site *Site
+	}
+	var results updateStatusResult
 	if err := json.Unmarshal(data, &results); err != nil {
 		return nil, err
 	}
@@ -321,4 +380,30 @@ func (o *Op) MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageRe
 		return nil, err
 	}
 	return &results, nil
+}
+
+// Delete サイト削除
+//
+// NOTE: undocumented resource
+func (o *Op) Delete(ctx context.Context, id string) (*Site, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s", id)
+
+	// build request body
+	var body interface{}
+
+	// do request
+	data, err := o.Client.Do(ctx, "DELETE", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type deleteResults struct {
+		Site *Site
+	}
+	var results deleteResults
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return results.Site, nil
 }

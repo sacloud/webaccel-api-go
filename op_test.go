@@ -16,6 +16,7 @@ package webaccel_test
 
 import (
 	"context"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"strings"
@@ -42,6 +43,28 @@ func testClient() webaccel.API {
 			HttpClient: &http.Client{},
 		},
 	})
+}
+func TestOp_Create(t *testing.T) {
+	checkEnv(t)
+
+	client := testClient()
+	name := testutil.RandomName("webaccel-api-go-test-", 8, testutil.CharSetAlpha)
+	created, err := client.Create(context.Background(), &webaccel.CreateSiteRequest{
+		Name:            name,
+		DomainType:      "subdomain",
+		OriginType:      webaccel.OriginTypesWebServer,
+		Origin:          "docs.usacloud.jp",
+		OriginProtocol:  webaccel.OriginProtocolsHttps,
+		VarySupport:     webaccel.VarySupportEnabled,
+		DefaultCacheTTL: pointer.NewInt(3600),
+	})
+
+	assert.NoError(t, err)
+	assert.Equal(t, created.Name, name)
+	assert.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
+	assert.Equal(t, created.DefaultCacheTTL, 3600)
+
+	os.Setenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID", created.ID)
 }
 
 func TestOp_List(t *testing.T) {
@@ -98,6 +121,23 @@ func TestOp_Update(t *testing.T) {
 	require.Empty(t, updated.CORSRules)
 	require.Empty(t, updated.OnetimeURLSecrets)
 	require.Equal(t, updated.DefaultCacheTTL, 0)
+}
+
+func TestOp_UpdateStatus(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
+	site, err := client.UpdateStatus(context.Background(), siteId, &webaccel.UpdateSiteStatusRequest{
+		Status: "enabled",
+	})
+	assert.NoError(t, err)
+	require.Equal(t, site.Status, "enabled")
+	site, err = client.UpdateStatus(context.Background(), siteId, &webaccel.UpdateSiteStatusRequest{
+		Status: "disabled",
+	})
+	assert.NoError(t, err)
+	require.Equal(t, site.Status, "disabled")
 }
 
 func TestWebAccelOp_ACL(t *testing.T) {
@@ -222,4 +262,15 @@ func TestOp_MonthlyUsage(t *testing.T) {
 	require.NotEmpty(t, results.Year)
 	require.NotEmpty(t, results.Month)
 	require.NotEmpty(t, results.MonthlyUsages)
+}
+
+func TestOp_Delete(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
+	deleted, err := client.Delete(context.Background(), siteId)
+
+	assert.NoError(t, err)
+	assert.Equal(t, deleted.ID, os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID"))
 }
