@@ -106,3 +106,9 @@ type UpdateSiteStatusRequest struct {
 type ACLResult struct {
 	ACL string
 }
+
+// CreateOriginGuardTokenResult サイトのオリジンガードトークン作成リクエスト
+type CreateOriginGuardTokenResult struct {
+	OriginGuardToken     string 
+	NextOriginGuardToken string `json:",omitempty"`
+}

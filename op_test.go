@@ -20,6 +20,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
+
 
 	client "github.com/sacloud/api-client-go"
 	"github.com/sacloud/packages-go/pointer"
@@ -139,6 +141,43 @@ func TestOp_Update(t *testing.T) {
 	require.Empty(t, updated.CORSRules)
 	require.Empty(t, updated.OnetimeURLSecrets)
 	require.Equal(t, updated.DefaultCacheTTL, 0)
+}
+
+// NOTE: to avoid frakey test, two methods are tested here
+func TestOp_CreateOriginGuardToken(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(token.OriginGuardToken), 0)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
+
+	nexttoken, err := client.CreateNextOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(nexttoken.OriginGuardToken), 0)
+	require.NotEqual(t, len(nexttoken.NextOriginGuardToken), 0)
+	require.Equal(t, nexttoken.OriginGuardToken, token.OriginGuardToken)
+	updatedToken := nexttoken.NextOriginGuardToken
+
+	token, err = client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.Equal(t, token.OriginGuardToken, updatedToken)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
+}
+
+// NOTE: to avoid frakey test, two methods are tested here
+func TestOp_CreateAutoCertUpdate(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	err := client.CreateAutoCertUpdate(context.Background(), siteId)
+	require.NoError(t, err)
+	time.Sleep(time.Second)
+	err = client.DeleteAutoCertUpdate(context.Background(), siteId)
+	require.NoError(t, err)
 }
 
 func TestWebAccelOp_ACL(t *testing.T) {

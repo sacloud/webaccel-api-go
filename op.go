@@ -305,6 +305,71 @@ func (o *Op) UpdateCertificate(ctx context.Context, id string, param *CreateOrUp
 	return results.Certificate, nil
 }
 
+// CreateAutoCertUpdate Let's Encrypt による証明書自動更新を有効化
+// NOTE: undocumented resource
+func (o *Op) CreateAutoCertUpdate(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
+
+	// build request body
+	type autoCertUpdateRequest struct {
+		Type string
+	}
+	body := &autoCertUpdateRequest{Type: "letsencrypt"}
+
+	// do request
+	_, err := o.Client.Do(ctx, "POST", url, body)
+	return err
+}
+
+// DeleteAutoCertUpdate Let's Encrypt による証明書自動更新を無効化
+// NOTE: undocumented resource
+func (o *Op) DeleteAutoCertUpdate(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
+
+	// build request body
+	var body interface{}
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	return err
+}
+
+// CreateOriginGuardToken オリジンガードトークンの新規作成/ローテーション
+// NOTE: undocumented resource
+func (o *Op) CreateOriginGuardToken(ctx context.Context, id string) (*CreateOriginGuardTokenResult, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token", id)
+
+	var body interface{}
+	// do request
+	data, err := o.Client.Do(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var results CreateOriginGuardTokenResult
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return &results, nil
+}
+
+// CreateNextOriginGuardToken 次期オリジンガードトークンの作成
+// NOTE: undocumented resource
+func (o *Op) CreateNextOriginGuardToken(ctx context.Context, id string) (*CreateOriginGuardTokenResult, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token/next", id)
+
+	var body interface{}
+	// do request
+	data, err := o.Client.Do(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var results CreateOriginGuardTokenResult
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return &results, nil
+}
+
 // DeleteCertificate サイトの証明書を削除
 func (o *Op) DeleteCertificate(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
