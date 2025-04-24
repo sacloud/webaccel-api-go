@@ -16,7 +16,6 @@ package webaccel_test
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"os"
 	"strings"
@@ -44,7 +43,11 @@ func testClient() webaccel.API {
 		},
 	})
 }
-func TestOp_Create(t *testing.T) {
+
+// TestSenario_Op_Create_Enable_Disable_Delete
+// サイトの状態により実行結果が変化するメソッドのテストシナリオ
+// 実行順序: Create -> Enable -> Disable -> Delete
+func TestSenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
 	checkEnv(t)
 
 	client := testClient()
@@ -59,12 +62,27 @@ func TestOp_Create(t *testing.T) {
 		DefaultCacheTTL: pointer.NewInt(3600),
 	})
 
-	assert.NoError(t, err)
-	assert.Equal(t, created.Name, name)
-	assert.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
-	assert.Equal(t, created.DefaultCacheTTL, 3600)
+	require.NoError(t, err)
+	require.Equal(t, created.Name, name)
+	require.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
+	require.Equal(t, created.DefaultCacheTTL, 3600)
+	require.NotEmpty(t, created.ID)
 
-	os.Setenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID", created.ID)
+	site, err := client.UpdateStatus(context.Background(), created.ID, &webaccel.UpdateSiteStatusRequest{
+		Status: "enabled",
+	})
+	require.NoError(t, err)
+	require.Equal(t, site.Status, "enabled")
+	site, err = client.UpdateStatus(context.Background(), created.ID, &webaccel.UpdateSiteStatusRequest{
+		Status: "disabled",
+	})
+	require.NoError(t, err)
+	require.Equal(t, site.Status, "disabled")
+
+	deleted, err := client.Delete(context.Background(), created.ID)
+
+	require.NoError(t, err)
+	require.Equal(t, deleted.ID, created.ID)
 }
 
 func TestOp_List(t *testing.T) {
@@ -121,23 +139,6 @@ func TestOp_Update(t *testing.T) {
 	require.Empty(t, updated.CORSRules)
 	require.Empty(t, updated.OnetimeURLSecrets)
 	require.Equal(t, updated.DefaultCacheTTL, 0)
-}
-
-func TestOp_UpdateStatus(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
-	site, err := client.UpdateStatus(context.Background(), siteId, &webaccel.UpdateSiteStatusRequest{
-		Status: "enabled",
-	})
-	assert.NoError(t, err)
-	require.Equal(t, site.Status, "enabled")
-	site, err = client.UpdateStatus(context.Background(), siteId, &webaccel.UpdateSiteStatusRequest{
-		Status: "disabled",
-	})
-	assert.NoError(t, err)
-	require.Equal(t, site.Status, "disabled")
 }
 
 func TestWebAccelOp_ACL(t *testing.T) {
@@ -262,15 +263,4 @@ func TestOp_MonthlyUsage(t *testing.T) {
 	require.NotEmpty(t, results.Year)
 	require.NotEmpty(t, results.Month)
 	require.NotEmpty(t, results.MonthlyUsages)
-}
-
-func TestOp_Delete(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID")
-	deleted, err := client.Delete(context.Background(), siteId)
-
-	assert.NoError(t, err)
-	assert.Equal(t, deleted.ID, os.Getenv("SAKURACLOUD_WEBACCEL_NEW_SITE_ID"))
 }
