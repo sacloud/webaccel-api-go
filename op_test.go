@@ -153,6 +153,31 @@ func TestOp_CreateOriginGuardToken(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEqual(t, len(token.OriginGuardToken), 0)
 	require.Equal(t, len(token.NextOriginGuardToken), 0)
+}
+
+func TestOp_Senario_Create_DeleteOriginGuardToken(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(token.OriginGuardToken), 0)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
+
+	err = client.DeleteOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+}
+
+func TestOp_Senario_Create_CreateNextOriginGuardToken(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(token.OriginGuardToken), 0)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
 
 	nexttoken, err := client.CreateNextOriginGuardToken(context.Background(), siteId)
 	require.NoError(t, err)
@@ -167,8 +192,43 @@ func TestOp_CreateOriginGuardToken(t *testing.T) {
 	require.Equal(t, len(token.NextOriginGuardToken), 0)
 }
 
-// NOTE: to avoid frakey test, two methods are tested here
-func TestOp_CreateAutoCertUpdate(t *testing.T) {
+func TestOp_Senario_Create_DeleteNextOriginGuardToken(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(token.OriginGuardToken), 0)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
+
+	nexttoken, err := client.CreateNextOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(nexttoken.OriginGuardToken), 0)
+	require.NotEqual(t, len(nexttoken.NextOriginGuardToken), 0)
+	require.Equal(t, nexttoken.OriginGuardToken, token.OriginGuardToken)
+
+	err = client.DeleteNextOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+}
+
+func TestOp_Senario_ReadOriginGuardToken(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(token.OriginGuardToken), 0)
+	require.Equal(t, len(token.NextOriginGuardToken), 0)
+
+	res, err := client.ReadOriginGuardToken(context.Background(), siteId)
+	require.NoError(t, err)
+	require.NotEqual(t, len(res.OriginGuardToken), 0)
+	require.Equal(t, res.OriginGuardToken, token.OriginGuardToken)
+}
+
+func TestOp_Senario_Create_DeleteAutoCertUpdate(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 	client := testClient()
 	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")

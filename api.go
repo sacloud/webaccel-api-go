@@ -23,8 +23,11 @@ type API interface {
 	Read(ctx context.Context, id string) (*Site, error)
 	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
 	UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error)
-	CreateOriginGuardToken(ctx context.Context, id string) (*CreateOriginGuardTokenResult, error)
-	CreateNextOriginGuardToken(ctx context.Context, id string) (*CreateOriginGuardTokenResult, error)
+	CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
+	ReadOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
+	DeleteOriginGuardToken(ctx context.Context, id string) error
+	CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
+	DeleteNextOriginGuardToken(ctx context.Context, id string) error
 	CreateAutoCertUpdate(ctx context.Context, id string) error
 	DeleteAutoCertUpdate(ctx context.Context, id string) error
 	ReadACL(ctx context.Context, id string) (*ACLResult, error)

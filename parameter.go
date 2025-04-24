@@ -107,8 +107,8 @@ type ACLResult struct {
 	ACL string
 }
 
-// CreateOriginGuardTokenResult サイトのオリジンガードトークン作成リクエスト
-type CreateOriginGuardTokenResult struct {
-	OriginGuardToken     string 
+// OriginGuardTokenResult サイトのオリジンガードトークン作成リクエスト
+type OriginGuardTokenResult struct {
+	OriginGuardToken     string
 	NextOriginGuardToken string `json:",omitempty"`
 }
