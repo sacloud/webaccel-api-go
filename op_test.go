@@ -365,3 +365,58 @@ func TestOp_MonthlyUsage(t *testing.T) {
 	require.NotEmpty(t, results.Month)
 	require.NotEmpty(t, results.MonthlyUsages)
 }
+
+func TestSenario_Op_Apply_ReadLogUploadConfig(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+	checkEnv(t, "SAKURASTORAGE_BUCKET_NAME")
+	checkEnv(t, "SAKURASTORAGE_ACCESS_KEY")
+	checkEnv(t, "SAKURASTORAGE_ACCESS_SECRET")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	region := "jp-north-1"
+	endpoint := "https://s3.isk01.sakurastorage.jp"
+	bucketName := os.Getenv("SAKURASTORAGE_BUCKET_NAME")
+	accessKey := os.Getenv("SAKURASTORAGE_ACCESS_KEY")
+	accessSecret := os.Getenv("SAKURASTORAGE_ACCESS_SECRET")
+	status := "enabled"
+	require.NotEmpty(t, bucketName)
+	require.NotEmpty(t, accessKey)
+	require.NotEmpty(t, accessSecret)
+	applied, err := client.ApplyLogUploadConfig(context.Background(), siteId, &webaccel.LogUploadConfig{
+		Region:          region,
+		Endpoint:        endpoint,
+		Bucket:          bucketName,
+		AccessKeyID:     accessKey,
+		SecretAccessKey: accessSecret,
+		Status:          status,
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, applied.Region, region)
+	require.Equal(t, applied.Endpoint, endpoint)
+	require.Equal(t, applied.Bucket, bucketName)
+	require.Equal(t, applied.AccessKeyID, accessKey)
+	require.Equal(t, applied.SecretAccessKey, accessSecret)
+	require.Equal(t, applied.Status, status)
+
+	read, err := client.ReadLogUploadConfig(context.Background(), siteId)
+
+	require.NoError(t, err)
+	require.Equal(t, read.Region, applied.Region)
+	require.Equal(t, read.Endpoint, applied.Endpoint)
+	require.Equal(t, read.Bucket, applied.Bucket)
+	require.NotEmpty(t, read.AccessKeyID)
+	require.NotEmpty(t, read.SecretAccessKey)
+	require.Equal(t, read.Status, applied.Status)
+}
+
+func TestOp_DeleteLogUploadConfig(t *testing.T) {
+	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
+
+	client := testClient()
+	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+	err := client.DeleteLogUploadConfig(context.Background(), siteId)
+
+	require.NoError(t, err)
+}

@@ -23,10 +23,10 @@ type API interface {
 	Read(ctx context.Context, id string) (*Site, error)
 	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
 	UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error)
-	CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
-	ReadOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
+	CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
+	ReadOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
 	DeleteOriginGuardToken(ctx context.Context, id string) error
-	CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResult, error)
+	CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
 	DeleteNextOriginGuardToken(ctx context.Context, id string) error
 	CreateAutoCertUpdate(ctx context.Context, id string) error
 	DeleteAutoCertUpdate(ctx context.Context, id string) error
@@ -41,4 +41,7 @@ type API interface {
 	DeleteCache(ctx context.Context, param *DeleteCacheRequest) ([]*DeleteCacheResult, error)
 	Delete(ctx context.Context, id string) (*Site, error)
 	MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageResults, error)
+	ApplyLogUploadConfig(ctx context.Context, id string, param *LogUploadConfig) (*LogUploadConfig, error)
+	ReadLogUploadConfig(ctx context.Context, id string) (*LogUploadConfig, error)
+	DeleteLogUploadConfig(ctx context.Context, id string) error
 }
