@@ -62,6 +62,7 @@ func TestSenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
 		OriginProtocol:  webaccel.OriginProtocolsHttps,
 		VarySupport:     webaccel.VarySupportEnabled,
 		DefaultCacheTTL: pointer.NewInt(3600),
+		NormalizeAE:     webaccel.NormalizeAEBzGz,
 	})
 
 	require.NoError(t, err)
@@ -133,6 +134,7 @@ func TestOp_Update(t *testing.T) {
 		CORSRules:         &[]*webaccel.CORSRule{},
 		OnetimeURLSecrets: &[]string{},
 		DefaultCacheTTL:   pointer.NewInt(0),
+		NormalizeAE:       webaccel.NormalizeAEGz,
 	})
 
 	require.NoError(t, err)

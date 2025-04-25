@@ -44,3 +44,9 @@ const (
 	DocIndexDisabled = "0" // 無効
 	DocIndexEnabled  = "1" // 有効
 )
+
+// NormalizeAE
+const (
+	NormalizeAEGz   = "1" // gzipに正規化
+	NormalizeAEBzGz = "3" // bzとgzipの組に正規化
+)
