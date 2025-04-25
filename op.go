@@ -39,8 +39,6 @@ func NewOp(caller APICaller) API {
 }
 
 // Create 新規サイトの作成
-//
-// NOTE: undocumented resource
 func (o *Op) Create(ctx context.Context, param *CreateSiteRequest) (*Site, error) {
 	url := o.Client.RootURL() + "site"
 
@@ -142,8 +140,6 @@ func (o *Op) Update(ctx context.Context, id string, param *UpdateSiteRequest) (*
 }
 
 // UpdateStatus サイト有効化状態の更新
-//
-// NOTE: undocumented resource
 func (o *Op) UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error) {
 
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/status", id)
@@ -383,8 +379,6 @@ func (o *Op) MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageRe
 }
 
 // Delete サイト削除
-//
-// NOTE: undocumented resource
 func (o *Op) Delete(ctx context.Context, id string) (*Site, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s", id)
 
