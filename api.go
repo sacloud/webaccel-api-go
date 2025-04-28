@@ -19,8 +19,10 @@ import "context"
 // API is interface for operate WebAccel resource
 type API interface {
 	List(ctx context.Context) (*ListSitesResult, error)
+	Create(ctx context.Context, param *CreateSiteRequest) (*Site, error)
 	Read(ctx context.Context, id string) (*Site, error)
 	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
+	UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error)
 	ReadACL(ctx context.Context, id string) (*ACLResult, error)
 	UpsertACL(ctx context.Context, id string, acl string) (*ACLResult, error)
 	DeleteACL(ctx context.Context, id string) error
@@ -30,5 +32,6 @@ type API interface {
 	DeleteCertificate(ctx context.Context, id string) error
 	DeleteAllCache(ctx context.Context, param *DeleteAllCacheRequest) error
 	DeleteCache(ctx context.Context, param *DeleteCacheRequest) ([]*DeleteCacheResult, error)
+	Delete(ctx context.Context, id string) (*Site, error)
 	MonthlyUsage(ctx context.Context, targetYM string) (*MonthlyUsageResults, error)
 }

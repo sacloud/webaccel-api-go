@@ -44,6 +44,47 @@ func testClient() webaccel.API {
 	})
 }
 
+// TestSenario_Op_Create_Enable_Disable_Delete
+// サイトの状態により実行結果が変化するメソッドのテストシナリオ
+// 実行順序: Create -> Enable -> Disable -> Delete
+func TestSenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
+	checkEnv(t)
+
+	client := testClient()
+	name := testutil.RandomName("webaccel-api-go-test-", 8, testutil.CharSetAlpha)
+	created, err := client.Create(context.Background(), &webaccel.CreateSiteRequest{
+		Name:            name,
+		DomainType:      "subdomain",
+		OriginType:      webaccel.OriginTypesWebServer,
+		Origin:          "docs.usacloud.jp",
+		OriginProtocol:  webaccel.OriginProtocolsHttps,
+		VarySupport:     webaccel.VarySupportEnabled,
+		DefaultCacheTTL: pointer.NewInt(3600),
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, created.Name, name)
+	require.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
+	require.Equal(t, created.DefaultCacheTTL, 3600)
+	require.NotEmpty(t, created.ID)
+
+	site, err := client.UpdateStatus(context.Background(), created.ID, &webaccel.UpdateSiteStatusRequest{
+		Status: "enabled",
+	})
+	require.NoError(t, err)
+	require.Equal(t, site.Status, "enabled")
+	site, err = client.UpdateStatus(context.Background(), created.ID, &webaccel.UpdateSiteStatusRequest{
+		Status: "disabled",
+	})
+	require.NoError(t, err)
+	require.Equal(t, site.Status, "disabled")
+
+	deleted, err := client.Delete(context.Background(), created.ID)
+
+	require.NoError(t, err)
+	require.Equal(t, deleted.ID, created.ID)
+}
+
 func TestOp_List(t *testing.T) {
 	checkEnv(t)
 
