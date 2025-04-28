@@ -22,7 +22,6 @@ import (
 	"testing"
 	"time"
 
-
 	client "github.com/sacloud/api-client-go"
 	"github.com/sacloud/packages-go/pointer"
 	"github.com/sacloud/packages-go/testutil"
@@ -46,10 +45,10 @@ func testClient() webaccel.API {
 	})
 }
 
-// TestSenario_Op_Create_Enable_Disable_Delete
+// TestScenario_Op_Create_Enable_Disable_Delete
 // サイトの状態により実行結果が変化するメソッドのテストシナリオ
 // 実行順序: Create -> Enable -> Disable -> Delete
-func TestSenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
+func TestScenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
 	checkEnv(t)
 
 	client := testClient()
@@ -145,7 +144,6 @@ func TestOp_Update(t *testing.T) {
 	require.Equal(t, updated.DefaultCacheTTL, 0)
 }
 
-// NOTE: to avoid frakey test, two methods are tested here
 func TestOp_CreateOriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
@@ -157,7 +155,8 @@ func TestOp_CreateOriginGuardToken(t *testing.T) {
 	require.Equal(t, len(token.NextOriginGuardToken), 0)
 }
 
-func TestOp_Senario_Create_DeleteOriginGuardToken(t *testing.T) {
+// NOTE: to avoid flakey test, two methods are tested here
+func TestOp_Scenario_Create_DeleteOriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
 	client := testClient()
@@ -171,7 +170,7 @@ func TestOp_Senario_Create_DeleteOriginGuardToken(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestOp_Senario_Create_CreateNextOriginGuardToken(t *testing.T) {
+func TestOp_Scenario_Create_CreateNextOriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
 	client := testClient()
@@ -194,7 +193,7 @@ func TestOp_Senario_Create_CreateNextOriginGuardToken(t *testing.T) {
 	require.Equal(t, len(token.NextOriginGuardToken), 0)
 }
 
-func TestOp_Senario_Create_DeleteNextOriginGuardToken(t *testing.T) {
+func TestOp_Scenario_Create_DeleteNextOriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
 	client := testClient()
@@ -214,7 +213,7 @@ func TestOp_Senario_Create_DeleteNextOriginGuardToken(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestOp_Senario_ReadOriginGuardToken(t *testing.T) {
+func TestOp_Scenario_ReadOriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
 	client := testClient()
@@ -230,7 +229,7 @@ func TestOp_Senario_ReadOriginGuardToken(t *testing.T) {
 	require.Equal(t, res.OriginGuardToken, token.OriginGuardToken)
 }
 
-func TestOp_Senario_Create_DeleteAutoCertUpdate(t *testing.T) {
+func TestOp_Scenario_Create_DeleteAutoCertUpdate(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 	client := testClient()
 	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
@@ -366,7 +365,7 @@ func TestOp_MonthlyUsage(t *testing.T) {
 	require.NotEmpty(t, results.MonthlyUsages)
 }
 
-func TestSenario_Op_Apply_ReadLogUploadConfig(t *testing.T) {
+func TestScenario_Op_Apply_ReadLogUploadConfig(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 	checkEnv(t, "SAKURASTORAGE_BUCKET_NAME")
 	checkEnv(t, "SAKURASTORAGE_ACCESS_KEY")
