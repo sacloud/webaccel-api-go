@@ -24,7 +24,6 @@ type API interface {
 	Update(ctx context.Context, id string, param *UpdateSiteRequest) (*Site, error)
 	UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error)
 	CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
-	ReadOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
 	DeleteOriginGuardToken(ctx context.Context, id string) error
 	CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error)
 	DeleteNextOriginGuardToken(ctx context.Context, id string) error

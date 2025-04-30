@@ -306,7 +306,7 @@ func (o *Op) UpdateCertificate(ctx context.Context, id string, param *CreateOrUp
 }
 
 // CreateAutoCertUpdate Let's Encrypt による証明書自動更新を有効化
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) CreateAutoCertUpdate(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
 
@@ -322,7 +322,7 @@ func (o *Op) CreateAutoCertUpdate(ctx context.Context, id string) error {
 }
 
 // DeleteAutoCertUpdate Let's Encrypt による証明書自動更新を無効化
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) DeleteAutoCertUpdate(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
 
@@ -332,29 +332,8 @@ func (o *Op) DeleteAutoCertUpdate(ctx context.Context, id string) error {
 	return err
 }
 
-// ReadOriginGuardToken 設定済みのオリジンガードトークンを取得する
-// NOTE: undocumented resource
-func (o *Op) ReadOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error) {
-	url := o.Client.RootURL() + fmt.Sprintf("site/%s", id)
-
-	var body interface{}
-	// do request
-	data, err := o.Client.Do(ctx, "GET", url, body)
-	if err != nil {
-		return nil, err
-	}
-
-	var results struct {
-		Site OriginGuardTokenResponse
-	}
-	if err := json.Unmarshal(data, &results); err != nil {
-		return nil, err
-	}
-	return &results.Site, nil
-}
-
 // CreateOriginGuardToken オリジンガードトークンの新規作成/ローテーション
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token", id)
 
@@ -373,7 +352,7 @@ func (o *Op) CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuar
 }
 
 // CreateNextOriginGuardToken 次期オリジンガードトークンの作成
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error) {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token/next", id)
 
@@ -392,7 +371,7 @@ func (o *Op) CreateNextOriginGuardToken(ctx context.Context, id string) (*Origin
 }
 
 // DeleteOriginGuardToken オリジンガードトークンの削除
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) DeleteOriginGuardToken(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token", id)
 
@@ -406,7 +385,7 @@ func (o *Op) DeleteOriginGuardToken(ctx context.Context, id string) error {
 }
 
 // DeleteNextOriginGuardToken 次期オリジンガードトークンの削除
-// NOTE: undocumented resource
+// NOTE: undocumented operation
 func (o *Op) DeleteNextOriginGuardToken(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token/next", id)
 

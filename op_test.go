@@ -144,101 +144,73 @@ func TestOp_Update(t *testing.T) {
 	require.Equal(t, updated.DefaultCacheTTL, 0)
 }
 
-func TestOp_CreateOriginGuardToken(t *testing.T) {
+func TestOp_OriginGuardToken(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 
+	var (
+		siteId           string
+		token, nextToken *webaccel.OriginGuardTokenResponse
+		err              error
+	)
 	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(token.OriginGuardToken), 0)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
+
+	t.Run("create origin guard token", func(t *testing.T) {
+		siteId = os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
+		token, err = client.CreateOriginGuardToken(context.Background(), siteId)
+		require.NoError(t, err)
+		require.NotEqual(t, len(token.OriginGuardToken), 0)
+		require.Equal(t, len(token.NextOriginGuardToken), 0)
+	})
+	t.Run("read origin guard token", func(t *testing.T) {
+		res, err := client.Read(context.Background(), siteId)
+		require.NoError(t, err)
+		require.NotEqual(t, len(res.OriginGuardToken), 0)
+		require.Equal(t, res.OriginGuardToken, token.OriginGuardToken)
+	})
+
+	t.Run("create next origin guard token", func(t *testing.T) {
+		nextToken, err = client.CreateNextOriginGuardToken(context.Background(), siteId)
+		require.NoError(t, err)
+		require.NotEqual(t, len(nextToken.OriginGuardToken), 0)
+		require.NotEqual(t, len(nextToken.NextOriginGuardToken), 0)
+		require.Equal(t, nextToken.OriginGuardToken, token.OriginGuardToken)
+	})
+	t.Run("migrate to the next origin guard token", func(t *testing.T) {
+		token, err = client.CreateOriginGuardToken(context.Background(), siteId)
+		require.NoError(t, err)
+		require.NotEqual(t, len(token.OriginGuardToken), 0)
+		require.Equal(t, len(token.NextOriginGuardToken), 0)
+		require.Equal(t, token.OriginGuardToken, nextToken.NextOriginGuardToken)
+	})
+
+	t.Run("delete next origin guard token", func(t *testing.T) {
+		err = client.DeleteNextOriginGuardToken(context.Background(), siteId)
+		require.NoError(t, err)
+	})
+
+	t.Run("delete origin guard token", func(t *testing.T) {
+		err = client.DeleteOriginGuardToken(context.Background(), siteId)
+		require.NoError(t, err)
+	})
+
 }
 
 // NOTE: to avoid flakey test, two methods are tested here
-func TestOp_Scenario_Create_DeleteOriginGuardToken(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(token.OriginGuardToken), 0)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
-
-	err = client.DeleteOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-}
-
-func TestOp_Scenario_Create_CreateNextOriginGuardToken(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(token.OriginGuardToken), 0)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
-
-	nexttoken, err := client.CreateNextOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(nexttoken.OriginGuardToken), 0)
-	require.NotEqual(t, len(nexttoken.NextOriginGuardToken), 0)
-	require.Equal(t, nexttoken.OriginGuardToken, token.OriginGuardToken)
-	updatedToken := nexttoken.NextOriginGuardToken
-
-	token, err = client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.Equal(t, token.OriginGuardToken, updatedToken)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
-}
-
-func TestOp_Scenario_Create_DeleteNextOriginGuardToken(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(token.OriginGuardToken), 0)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
-
-	nexttoken, err := client.CreateNextOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(nexttoken.OriginGuardToken), 0)
-	require.NotEqual(t, len(nexttoken.NextOriginGuardToken), 0)
-	require.Equal(t, nexttoken.OriginGuardToken, token.OriginGuardToken)
-
-	err = client.DeleteNextOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-}
-
-func TestOp_Scenario_ReadOriginGuardToken(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	token, err := client.CreateOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(token.OriginGuardToken), 0)
-	require.Equal(t, len(token.NextOriginGuardToken), 0)
-
-	res, err := client.ReadOriginGuardToken(context.Background(), siteId)
-	require.NoError(t, err)
-	require.NotEqual(t, len(res.OriginGuardToken), 0)
-	require.Equal(t, res.OriginGuardToken, token.OriginGuardToken)
-}
-
-func TestOp_Scenario_Create_DeleteAutoCertUpdate(t *testing.T) {
+// NOTE: undocumented operation
+func TestOp_AutoCertUpdate(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 	client := testClient()
 	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
 
-	err := client.CreateAutoCertUpdate(context.Background(), siteId)
-	require.NoError(t, err)
-	time.Sleep(time.Second)
-	err = client.DeleteAutoCertUpdate(context.Background(), siteId)
-	require.NoError(t, err)
+	t.Run("create automatic certificate update configuration", func(t *testing.T) {
+		err := client.CreateAutoCertUpdate(context.Background(), siteId)
+		require.NoError(t, err)
+		time.Sleep(time.Second)
+	})
+	t.Run("delete automatic certificate update configuration", func(t *testing.T) {
+		err := client.DeleteAutoCertUpdate(context.Background(), siteId)
+		require.NoError(t, err)
+	})
 }
 
 func TestWebAccelOp_ACL(t *testing.T) {
@@ -365,13 +337,16 @@ func TestOp_MonthlyUsage(t *testing.T) {
 	require.NotEmpty(t, results.MonthlyUsages)
 }
 
-func TestScenario_Op_Apply_ReadLogUploadConfig(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-	checkEnv(t, "SAKURASTORAGE_BUCKET_NAME")
-	checkEnv(t, "SAKURASTORAGE_ACCESS_KEY")
-	checkEnv(t, "SAKURASTORAGE_ACCESS_SECRET")
+func TestOp_LogUploadConfig(t *testing.T) {
+	testutil.PreCheckEnvsFunc(
+		"SAKURACLOUD_WEBACCEL_SITE_ID",
+		"SAKURASTORAGE_BUCKET_NAME",
+		"SAKURASTORAGE_ACCESS_KEY",
+		"SAKURASTORAGE_ACCESS_SECRET",
+	)(t)
 
 	client := testClient()
+
 	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
 	region := "jp-north-1"
 	endpoint := "https://s3.isk01.sakurastorage.jp"
@@ -379,43 +354,49 @@ func TestScenario_Op_Apply_ReadLogUploadConfig(t *testing.T) {
 	accessKey := os.Getenv("SAKURASTORAGE_ACCESS_KEY")
 	accessSecret := os.Getenv("SAKURASTORAGE_ACCESS_SECRET")
 	status := "enabled"
+
+	var (
+		applied, read *webaccel.LogUploadConfig
+		err           error
+	)
+
 	require.NotEmpty(t, bucketName)
 	require.NotEmpty(t, accessKey)
 	require.NotEmpty(t, accessSecret)
-	applied, err := client.ApplyLogUploadConfig(context.Background(), siteId, &webaccel.LogUploadConfig{
-		Region:          region,
-		Endpoint:        endpoint,
-		Bucket:          bucketName,
-		AccessKeyID:     accessKey,
-		SecretAccessKey: accessSecret,
-		Status:          status,
+
+	t.Run("apply the log upload configuration", func(t *testing.T) {
+		applied, err = client.ApplyLogUploadConfig(context.Background(), siteId, &webaccel.LogUploadConfig{
+			Region:          region,
+			Endpoint:        endpoint,
+			Bucket:          bucketName,
+			AccessKeyID:     accessKey,
+			SecretAccessKey: accessSecret,
+			Status:          status,
+		})
+
+		require.NoError(t, err)
+		require.Equal(t, applied.Region, region)
+		require.Equal(t, applied.Endpoint, endpoint)
+		require.Equal(t, applied.Bucket, bucketName)
+		require.Equal(t, applied.AccessKeyID, accessKey)
+		require.Equal(t, applied.SecretAccessKey, accessSecret)
+		require.Equal(t, applied.Status, status)
 	})
 
-	require.NoError(t, err)
-	require.Equal(t, applied.Region, region)
-	require.Equal(t, applied.Endpoint, endpoint)
-	require.Equal(t, applied.Bucket, bucketName)
-	require.Equal(t, applied.AccessKeyID, accessKey)
-	require.Equal(t, applied.SecretAccessKey, accessSecret)
-	require.Equal(t, applied.Status, status)
+	t.Run("read a log upload configuration", func(t *testing.T) {
+		read, err = client.ReadLogUploadConfig(context.Background(), siteId)
 
-	read, err := client.ReadLogUploadConfig(context.Background(), siteId)
+		require.NoError(t, err)
+		require.Equal(t, read.Region, applied.Region)
+		require.Equal(t, read.Endpoint, applied.Endpoint)
+		require.Equal(t, read.Bucket, applied.Bucket)
+		require.NotEmpty(t, read.AccessKeyID)
+		require.NotEmpty(t, read.SecretAccessKey)
+		require.Equal(t, read.Status, applied.Status)
+	})
 
-	require.NoError(t, err)
-	require.Equal(t, read.Region, applied.Region)
-	require.Equal(t, read.Endpoint, applied.Endpoint)
-	require.Equal(t, read.Bucket, applied.Bucket)
-	require.NotEmpty(t, read.AccessKeyID)
-	require.NotEmpty(t, read.SecretAccessKey)
-	require.Equal(t, read.Status, applied.Status)
-}
-
-func TestOp_DeleteLogUploadConfig(t *testing.T) {
-	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
-
-	client := testClient()
-	siteId := os.Getenv("SAKURACLOUD_WEBACCEL_SITE_ID")
-	err := client.DeleteLogUploadConfig(context.Background(), siteId)
-
-	require.NoError(t, err)
+	t.Run("delete the log upload configuration", func(t *testing.T) {
+		err = client.DeleteLogUploadConfig(context.Background(), siteId)
+		require.NoError(t, err)
+	})
 }
