@@ -195,8 +195,7 @@ func TestOp_OriginGuardToken(t *testing.T) {
 
 }
 
-// NOTE: to avoid flakey test, two methods are tested here
-// NOTE: undocumented operation
+// NOTE: Let's Encrypt 自動更新が無効化されたサイトを用意しないと失敗する
 func TestOp_AutoCertUpdate(t *testing.T) {
 	checkEnv(t, "SAKURACLOUD_WEBACCEL_SITE_ID")
 	client := testClient()
@@ -325,6 +324,7 @@ func TestOp_DeleteCache(t *testing.T) {
 	require.NotEmpty(t, result)
 }
 
+// NOTE: 当月中にトラフィックのないアカウントまたは月初のテストで失敗する
 func TestOp_MonthlyUsage(t *testing.T) {
 	checkEnv(t)
 
