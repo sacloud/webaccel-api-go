@@ -535,9 +535,6 @@ func (o *Op) ReadLogUploadConfig(ctx context.Context, id string) (*LogUploadConf
 	if err := json.Unmarshal(data, &result); err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, err
-	}
 	return result.SiteLogUploadConfig, nil
 }
 
