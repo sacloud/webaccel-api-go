@@ -67,6 +67,7 @@ func TestScenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, created.Name, name)
 	require.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
+	require.Equal(t, created.NormalizeAE, webaccel.NormalizeAEBzGz)
 	require.Equal(t, created.DefaultCacheTTL, 3600)
 	require.NotEmpty(t, created.ID)
 
