@@ -28,11 +28,15 @@ type Site struct {
 	RequestProtocol string // 0:http/https, 1:httpsのみ, 2:httpsにリダイレクト
 	DefaultCacheTTL int    `validate:"min=-1,max=604800"` // -1:無効, 0 ～ 604800 の範囲内の数値: デフォルトのキャッシュ期間(秒)
 	VarySupport     string // 0:無効, 1:有効
+	// NOTE: List()だと空、Read()でのみ参照可能
+	NormalizeAE string // 1:Accept-Encodingをgzipに正規化, 3:bzとgzipの組に正規化
 
-	OriginType     string // 0:ウェブサーバ, 1:オブジェクトストレージ
-	Origin         string
-	OriginProtocol string
-	HostHeader     string
+	OriginType           string // 0:ウェブサーバ, 1:オブジェクトストレージ
+	Origin               string
+	OriginProtocol       string
+	HostHeader           string
+	OriginGuardToken     string
+	NextOriginGuardToken string
 
 	// オブジェクトストレージをオリジンにする場合
 	BucketName string

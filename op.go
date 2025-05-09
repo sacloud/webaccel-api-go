@@ -305,6 +305,93 @@ func (o *Op) UpdateCertificate(ctx context.Context, id string, param *CreateOrUp
 	return results.Certificate, nil
 }
 
+// CreateAutoCertUpdate Let's Encrypt 自動更新証明書有効化
+func (o *Op) CreateAutoCertUpdate(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
+
+	// build request body
+	type autoCertUpdateRequest struct {
+		Type string
+	}
+	body := &autoCertUpdateRequest{Type: "letsencrypt"}
+
+	// do request
+	_, err := o.Client.Do(ctx, "POST", url, body)
+	return err
+}
+
+// DeleteAutoCertUpdate Let's Encrypt 自動更新証明書無効化
+func (o *Op) DeleteAutoCertUpdate(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/auto-cert-update", id)
+
+	// build request body
+	var body interface{}
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	return err
+}
+
+// CreateOriginGuardToken オリジンガードトークンの発行・更新
+func (o *Op) CreateOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token", id)
+
+	var body interface{}
+	// do request
+	data, err := o.Client.Do(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var results OriginGuardTokenResponse
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return &results, nil
+}
+
+// CreateNextOriginGuardToken オリジンガードトークンの次期トークン作成
+func (o *Op) CreateNextOriginGuardToken(ctx context.Context, id string) (*OriginGuardTokenResponse, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token/next", id)
+
+	var body interface{}
+	// do request
+	data, err := o.Client.Do(ctx, "POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var results OriginGuardTokenResponse
+	if err := json.Unmarshal(data, &results); err != nil {
+		return nil, err
+	}
+	return &results, nil
+}
+
+// DeleteOriginGuardToken オリジンガードトークンの削除
+func (o *Op) DeleteOriginGuardToken(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token", id)
+
+	var body interface{}
+	// do request
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteNextOriginGuardToken オリジンガードトークンの次期トークン更新キャンセル
+func (o *Op) DeleteNextOriginGuardToken(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/origin-guard-token/next", id)
+
+	var body interface{}
+	// do request
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // DeleteCertificate サイトの証明書を削除
 func (o *Op) DeleteCertificate(ctx context.Context, id string) error {
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/certificate", id)
@@ -400,4 +487,68 @@ func (o *Op) Delete(ctx context.Context, id string) (*Site, error) {
 		return nil, err
 	}
 	return results.Site, nil
+}
+
+// ApplyLogUploadConfig ログアップロード設定を作成・更新
+func (o *Op) ApplyLogUploadConfig(ctx context.Context, id string, param *LogUploadConfig) (*LogUploadConfig, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/log-upload-config", id)
+
+	type applyLogUploadConfigRequest struct {
+		SiteLogUploadConfig *LogUploadConfig `json:",omitempty"`
+	}
+	req := applyLogUploadConfigRequest{
+		SiteLogUploadConfig: param,
+	}
+	// do request
+	data, err := o.Client.Do(ctx, "PUT", url, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type applyLogUploadConfigResponse applyLogUploadConfigRequest
+	var result applyLogUploadConfigResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	return result.SiteLogUploadConfig, nil
+}
+
+// ReadLogUploadConfig ログアップロードを取得
+func (o *Op) ReadLogUploadConfig(ctx context.Context, id string) (*LogUploadConfig, error) {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/log-upload-config", id)
+
+	var body interface{}
+
+	// do request
+	data, err := o.Client.Do(ctx, "GET", url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// build results
+	type ReadLogUploadConfigResponse struct {
+		SiteLogUploadConfig *LogUploadConfig `json:",omitempty"`
+	}
+
+	var result ReadLogUploadConfigResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	return result.SiteLogUploadConfig, nil
+}
+
+// DeleteLogUploadConfig ログアップロードを削除
+func (o *Op) DeleteLogUploadConfig(ctx context.Context, id string) error {
+	url := o.Client.RootURL() + fmt.Sprintf("site/%s/log-upload-config", id)
+
+	var body interface{}
+
+	// do request
+	_, err := o.Client.Do(ctx, "DELETE", url, body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
