@@ -48,5 +48,5 @@ const (
 // NormalizeAE
 const (
 	NormalizeAEGz   = "1" // gzipに正規化
-	NormalizeAEBzGz = "3" // bzとgzipの組に正規化
+	NormalizeAEBrGz = "3" // brとgzipの組に正規化
 )

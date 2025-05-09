@@ -61,13 +61,13 @@ func TestScenario_Op_Create_Enable_Disable_Delete(t *testing.T) {
 		OriginProtocol:  webaccel.OriginProtocolsHttps,
 		VarySupport:     webaccel.VarySupportEnabled,
 		DefaultCacheTTL: pointer.NewInt(3600),
-		NormalizeAE:     webaccel.NormalizeAEBzGz,
+		NormalizeAE:     webaccel.NormalizeAEBrGz,
 	})
 
 	require.NoError(t, err)
 	require.Equal(t, created.Name, name)
 	require.Equal(t, created.VarySupport, webaccel.VarySupportEnabled)
-	require.Equal(t, created.NormalizeAE, webaccel.NormalizeAEBzGz)
+	require.Equal(t, created.NormalizeAE, webaccel.NormalizeAEBrGz)
 	require.Equal(t, created.DefaultCacheTTL, 3600)
 	require.NotEmpty(t, created.ID)
 
