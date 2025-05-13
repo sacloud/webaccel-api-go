@@ -57,6 +57,7 @@ type CreateSiteRequest struct {
 	OriginProtocol  string `json:",omitempty" validate:"omitempty,oneof=http https"`
 	DefaultCacheTTL *int   `json:",omitempty" validate:"omitempty,min=-1,max=604800"` // -1:無効, 0 ～ 604800 の範囲内の数値: デフォルトのキャッシュ期間(秒)
 	VarySupport     string `json:",omitempty" validate:"omitempty,oneof=0 1"`         // 0:無効, 1:有効
+	NormalizeAE     string `json:",omitempty" validate:"omitempty,oneof=1 3"`         // 1:Accept-Encodingをgzipに正規化, 3:bzとgzipの組に正規化
 
 	// 「オリジン種別」が「ウェブサーバ」の場合に設定可能な項目
 	Origin     string `json:",omitempty"`
@@ -80,6 +81,7 @@ type UpdateSiteRequest struct {
 	OriginProtocol  string `json:",omitempty" validate:"omitempty,oneof=http https"`
 	DefaultCacheTTL *int   `json:",omitempty" validate:"omitempty,min=-1,max=604800"` // -1:無効, 0 ～ 604800 の範囲内の数値: デフォルトのキャッシュ期間(秒)
 	VarySupport     string `json:",omitempty" validate:"omitempty,oneof=0 1"`         // 0:無効, 1:有効
+	NormalizeAE     string `json:",omitempty" validate:"omitempty,oneof=1 3"`         // 1:Accept-Encodingをgzipに正規化, 3:bzとgzipの組に正規化
 
 	// CORSRules ルール一覧、設定されている場合単一要素を持つ配列となる
 	CORSRules         *[]*CORSRule `json:",omitempty"`
@@ -105,4 +107,10 @@ type UpdateSiteStatusRequest struct {
 
 type ACLResult struct {
 	ACL string
+}
+
+// OriginGuardTokenResponse サイトのオリジンガードトークン取得レスポンス
+type OriginGuardTokenResponse struct {
+	OriginGuardToken     string `json:","`
+	NextOriginGuardToken string `json:","`
 }
