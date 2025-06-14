@@ -105,3 +105,90 @@ func TestMapNormalizeAEValueToNickname(t *testing.T) {
 		})
 	}
 }
+
+func TestMapNormalizeAElNicknameToValue(t *testing.T) {
+	tt := []struct {
+		Name        string
+		Given       string
+		Want        string
+		ExpectError bool
+	}{
+		{
+			"valid gzip nickname",
+			gunzipCompressionNickname,
+			NormalizeAEGz,
+			false,
+		},
+		{
+			"valid brotli nickname",
+			brotliCompressionNickname,
+			NormalizeAEBrGz,
+			false,
+		},
+		{
+			"invalid encoding nickname",
+			"3-NO-SUCH-NORMALIZE-AE-PARAM",
+			"",
+			true,
+		},
+	}
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			res, err := MapNormalizeAENicknameToValue(tc.Given)
+			if tc.ExpectError {
+				if err == nil {
+					t.Fatalf("expected error, got none")
+				}
+			} else if res != tc.Want {
+				t.Fatalf("FAILED %s: got: %v\nwant: %v", tc.Name, res, tc.Want)
+			}
+		})
+	}
+}
+
+func TestMapRequestProtocolNicknameToValue(t *testing.T) {
+	tt := []struct {
+		Name        string
+		Given       string
+		Want        string
+		ExpectError bool
+	}{
+		{
+			"valid http+https nickname",
+			httpOrHttpsRequestProtocolNickname,
+			RequestProtocolsHttpAndHttps,
+			false,
+		},
+		{
+			"valid https nickname",
+			httpsOnlyRequestProtocolNickname,
+			RequestProtocolsHttpsOnly,
+			false,
+		},
+		{
+			"valid https redirection nickname",
+			httpsRedirectedRequestProtocolNickname,
+			RequestProtocolsRedirectToHttps,
+			false,
+		},
+		{
+			"invalid request protocol",
+			"NO-SUCH-RP",
+			"",
+			true,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			res, err := MapRequestProtocolNicknameToValue(tc.Given)
+			if tc.ExpectError {
+				if err == nil {
+					t.Fatalf("expected error, got none")
+				}
+			} else if res != tc.Want {
+				t.Fatalf("FAILED %s: got: %v\nwant: %v", tc.Name, res, tc.Want)
+			}
+		})
+	}
+}
