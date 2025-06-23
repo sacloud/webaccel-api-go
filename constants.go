@@ -50,3 +50,37 @@ const (
 	NormalizeAEGz   = "1" // gzipに正規化
 	NormalizeAEBrGz = "3" // brとgzipの組に正規化
 )
+
+// 各種パラメタの文字列表現。
+// Note: APIリクエストそのものには指定できない。
+const (
+	gunzipCompressionNickname              = "gzip"
+	brotliCompressionNickname              = "br+gzip"
+	httpOrHttpsRequestProtocolNickname     = "http+https"
+	httpsOnlyRequestProtocolNickname       = "https"
+	httpsRedirectedRequestProtocolNickname = "https-redirect"
+)
+
+var (
+	// NormalizeAENicknameStrings
+	// NormalizeAEパラメタの文字列表現。APIリクエストには直接指定できないことに注意。
+	// MapNormalizeAENicknameToValue を用いてAPIリクエストに指定する値に変換できる。
+	NormalizeAENicknameStrings = []string{
+		gunzipCompressionNickname,
+		brotliCompressionNickname,
+	}
+	// RequestProtocolStrings
+	// RequestProtocolパラメタの文字列表現。APIリクエストには直接指定できないことに注意。
+	// MapRequestProtocolNicknameToValue を用いてAPIリクエストに指定する値に変換できる。
+	RequestProtocolStrings = []string{
+		httpOrHttpsRequestProtocolNickname,
+		httpsOnlyRequestProtocolNickname,
+		httpsRedirectedRequestProtocolNickname,
+	}
+	// OriginProtocolStrings
+	// OriginProtocolパラメタの文字列表現。いずれかの値をAPIリクエストに直接指定できる。
+	OriginProtocolStrings = []string{
+		OriginProtocolsHttp,
+		OriginProtocolsHttps,
+	}
+)
