@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.4.0](https://github.com/sacloud/webaccel-api-go/compare/v1.3.0...v1.4.0) - 2025-06-23
+- github.com/hashicorp/go-retryablehttp v0.7.7 by @g1eng in https://github.com/sacloud/webaccel-api-go/pull/64
+- go: bump github.com/sacloud/packages-go from 0.0.10 to 0.0.11 by @dependabot in https://github.com/sacloud/webaccel-api-go/pull/58
+- go: bump github.com/sacloud/api-client-go from 0.2.10 to 0.3.0 by @dependabot in https://github.com/sacloud/webaccel-api-go/pull/68
+- SDK利用者が各種パラメタを扱いやすくするconstと変換処理を追加 by @g1eng in https://github.com/sacloud/webaccel-api-go/pull/66
+
 ## [v1.3.0](https://github.com/sacloud/webaccel-api-go/compare/v1.2.0...v1.3.0) - 2025-05-13
 - ci: bump goreleaser/goreleaser-action from 5 to 6 by @dependabot in https://github.com/sacloud/webaccel-api-go/pull/55
 - goreleaser v2に対応 by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/56
