@@ -141,7 +141,6 @@ func (o *Op) Update(ctx context.Context, id string, param *UpdateSiteRequest) (*
 
 // UpdateStatus サイト有効化状態の更新
 func (o *Op) UpdateStatus(ctx context.Context, id string, param *UpdateSiteStatusRequest) (*Site, error) {
-
 	url := o.Client.RootURL() + fmt.Sprintf("site/%s/status", id)
 
 	// build request body
