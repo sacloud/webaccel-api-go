@@ -26,6 +26,7 @@ import (
 	"sync"
 
 	client "github.com/sacloud/api-client-go"
+	"github.com/sacloud/saclient-go"
 )
 
 // DefaultAPIRootURL デフォルトのAPIルートURL
@@ -64,8 +65,9 @@ type Client struct {
 	// DisableEnv 環境変数からの設定読み取りを無効化
 	DisableEnv bool
 
+	Saclient saclient.ClientAPI
+
 	initOnce sync.Once
-	factory  *client.Factory
 }
 
 func (c *Client) RootURL() string {
@@ -114,7 +116,9 @@ func (c *Client) init() error {
 			AccessTokenSecret: c.AccessTokenSecret,
 		})
 
-		c.factory = client.NewFactory(opts...)
+		if c.Saclient == nil {
+			c.Saclient = saclient.NewFactory(opts...)
+		}
 	})
 	return initError
 }
@@ -131,11 +135,11 @@ func (c *Client) Do(ctx context.Context, method, uri string, body interface{}) (
 	}
 
 	// API call
-	resp, err := c.factory.NewHttpRequestDoer().Do(req)
+	resp, err := c.Saclient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {

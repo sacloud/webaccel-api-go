@@ -193,7 +193,6 @@ func TestOp_OriginGuardToken(t *testing.T) {
 		err = client.DeleteOriginGuardToken(context.Background(), siteId)
 		require.NoError(t, err)
 	})
-
 }
 
 // NOTE: Let's Encrypt 自動更新が無効化されたサイトを用意しないと失敗する
