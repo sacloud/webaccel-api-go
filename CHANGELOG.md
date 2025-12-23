@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.4.0](https://github.com/sacloud/webaccel-api-go/compare/v1.3.0...v1.4.0) - 2025-12-23
+- github.com/hashicorp/go-retryablehttp v0.7.7 by @g1eng in https://github.com/sacloud/webaccel-api-go/pull/64
+- go: bump github.com/sacloud/packages-go from 0.0.10 to 0.0.11 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/58
+- go: bump github.com/sacloud/api-client-go from 0.2.10 to 0.3.0 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/68
+- SDK利用者が各種パラメタを扱いやすくするconstと変換処理を追加 by @g1eng in https://github.com/sacloud/webaccel-api-go/pull/66
+- feat: use of `saclient-go` by @shyouhei in https://github.com/sacloud/webaccel-api-go/pull/79
+- ci: bump actions/checkout from 4 to 6 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/76
+- use go-version-file by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/80
+- Slim down PR workflows to run only on ubuntu-latest; add daily OS matrix tests by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/81
+- go: bump github.com/sacloud/api-client-go from 0.3.0 to 0.3.4 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/78
+- ci: bump actions/setup-go from 5 to 6 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/75
+- textlint: ignore CHANGELOG.md by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/82
+
 ## [v1.3.0](https://github.com/sacloud/webaccel-api-go/compare/v1.2.0...v1.3.0) - 2025-05-13
 - ci: bump goreleaser/goreleaser-action from 5 to 6 by @dependabot in https://github.com/sacloud/webaccel-api-go/pull/55
 - goreleaser v2に対応 by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/56
