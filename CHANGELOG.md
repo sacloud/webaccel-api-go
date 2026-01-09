@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.4.1](https://github.com/sacloud/webaccel-api-go/compare/v1.4.0...v1.4.1) - 2026-01-09
+- go: bump github.com/sacloud/saclient-go from 0.2.4 to 0.2.6 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/84
+- fix: use default http.Client by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/86
+
 ## [v1.4.0](https://github.com/sacloud/webaccel-api-go/compare/v1.3.0...v1.4.0) - 2025-12-23
 - github.com/hashicorp/go-retryablehttp v0.7.7 by @g1eng in https://github.com/sacloud/webaccel-api-go/pull/64
 - go: bump github.com/sacloud/packages-go from 0.0.10 to 0.0.11 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/58
