@@ -16,7 +16,6 @@ package webaccel_test
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"strings"
 	"testing"
@@ -39,9 +38,7 @@ func checkEnv(t *testing.T, requireEnvs ...string) {
 
 func testClient() webaccel.API {
 	return webaccel.NewOp(&webaccel.Client{
-		Options: &client.Options{
-			HttpClient: &http.Client{},
-		},
+		Options: &client.Options{},
 	})
 }
 
