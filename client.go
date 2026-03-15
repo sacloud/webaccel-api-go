@@ -29,8 +29,12 @@ import (
 	"github.com/sacloud/saclient-go"
 )
 
-// DefaultAPIRootURL デフォルトのAPIルートURL
-const DefaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/webaccel/1.0/"
+const (
+	// DefaultAPIRootURL デフォルトのAPIルートURL
+	DefaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/webaccel/1.0/"
+	// serviceKey エンドポイントURLの取得に使用するサービスキー
+	serviceKey = "webaccel"
+)
 
 // UserAgent APIリクエスト時のユーザーエージェント
 var UserAgent = fmt.Sprintf(
@@ -72,12 +76,27 @@ type Client struct {
 
 func (c *Client) RootURL() string {
 	v := DefaultAPIRootURL
+
 	if c.APIRootURL != "" {
 		v = c.APIRootURL
 	}
 	if !strings.HasSuffix(v, "/") {
 		v += "/"
 	}
+
+	// エンドポイントURLの取得
+	// init前に呼び出されるため、saclientから直接取得する
+	var saclient saclient.Client
+	endpointConfig, err := saclient.EndpointConfig()
+	if err != nil {
+		//取得できなかった場合は、デフォルトURLもしくはAPIRootURLを使用する
+		return v
+	}
+
+	if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
+		v = ep
+	}
+
 	return v
 }
 
