@@ -75,6 +75,9 @@ type Client struct {
 }
 
 func (c *Client) RootURL() string {
+	// 初期化処理を実行して、エンドポイントURLを取得する
+	c.init()
+
 	v := DefaultAPIRootURL
 
 	if c.APIRootURL != "" {
@@ -83,20 +86,6 @@ func (c *Client) RootURL() string {
 	if !strings.HasSuffix(v, "/") {
 		v += "/"
 	}
-
-	// エンドポイントURLの取得
-	// init前に呼び出されるため、saclientから直接取得する
-	var saclient saclient.Client
-	endpointConfig, err := saclient.EndpointConfig()
-	if err != nil {
-		//取得できなかった場合は、デフォルトURLもしくはAPIRootURLを使用する
-		return v
-	}
-
-	if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
-		v = ep
-	}
-
 	return v
 }
 
@@ -137,6 +126,14 @@ func (c *Client) init() error {
 
 		if c.Saclient == nil {
 			c.Saclient = saclient.NewFactory(opts...)
+		}
+		// エンドポイントURLの取得
+		endpointConfig, err := c.Saclient.EndpointConfig()
+		if err != nil {
+			initError = err
+		}
+		if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
+			c.APIRootURL = ep
 		}
 	})
 	return initError
