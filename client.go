@@ -29,8 +29,12 @@ import (
 	"github.com/sacloud/saclient-go"
 )
 
-// DefaultAPIRootURL デフォルトのAPIルートURL
-const DefaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/webaccel/1.0/"
+const (
+	// DefaultAPIRootURL デフォルトのAPIルートURL
+	DefaultAPIRootURL = "https://secure.sakura.ad.jp/cloud/zone/is1a/api/webaccel/1.0/"
+	// serviceKey エンドポイントURLの取得に使用するサービスキー
+	serviceKey = "webaccel"
+)
 
 // UserAgent APIリクエスト時のユーザーエージェント
 var UserAgent = fmt.Sprintf(
@@ -68,10 +72,18 @@ type Client struct {
 	Saclient saclient.ClientAPI
 
 	initOnce sync.Once
+
+	//onceで実行するInitializeのエラーを保持する
+	initError error
 }
 
 func (c *Client) RootURL() string {
+	// 初期化処理を実行して、エンドポイントURLを取得する
+	// エラーはDo()でチェックするため、ここではエラーは返さない
+	_ = c.init()
+
 	v := DefaultAPIRootURL
+
 	if c.APIRootURL != "" {
 		v = c.APIRootURL
 	}
@@ -82,14 +94,13 @@ func (c *Client) RootURL() string {
 }
 
 func (c *Client) init() error {
-	var initError error
 	c.initOnce.Do(func() {
 		var opts []*client.Options
 		// 1: Profile
 		if !c.DisableProfile {
 			o, err := client.OptionsFromProfile(c.Profile)
 			if err != nil {
-				initError = err
+				c.initError = err
 				return
 			}
 			opts = append(opts, o)
@@ -119,8 +130,16 @@ func (c *Client) init() error {
 		if c.Saclient == nil {
 			c.Saclient = saclient.NewFactory(opts...)
 		}
+		// エンドポイントURLの取得
+		endpointConfig, err := c.Saclient.EndpointConfig()
+		if err != nil {
+			c.initError = err
+		}
+		if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
+			c.APIRootURL = ep
+		}
 	})
-	return initError
+	return c.initError
 }
 
 // Do APIコール実施
