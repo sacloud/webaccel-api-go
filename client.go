@@ -72,11 +72,15 @@ type Client struct {
 	Saclient saclient.ClientAPI
 
 	initOnce sync.Once
+
+	//onceで実行するInitializeのエラーを保持する
+	initError error
 }
 
 func (c *Client) RootURL() string {
 	// 初期化処理を実行して、エンドポイントURLを取得する
-	c.init()
+	// エラーはDo()でチェックするため、ここではエラーは返さない
+	_ = c.init()
 
 	v := DefaultAPIRootURL
 
@@ -90,14 +94,13 @@ func (c *Client) RootURL() string {
 }
 
 func (c *Client) init() error {
-	var initError error
 	c.initOnce.Do(func() {
 		var opts []*client.Options
 		// 1: Profile
 		if !c.DisableProfile {
 			o, err := client.OptionsFromProfile(c.Profile)
 			if err != nil {
-				initError = err
+				c.initError = err
 				return
 			}
 			opts = append(opts, o)
@@ -130,13 +133,13 @@ func (c *Client) init() error {
 		// エンドポイントURLの取得
 		endpointConfig, err := c.Saclient.EndpointConfig()
 		if err != nil {
-			initError = err
+			c.initError = err
 		}
 		if ep, ok := endpointConfig.Endpoints[serviceKey]; ok && ep != "" {
 			c.APIRootURL = ep
 		}
 	})
-	return initError
+	return c.initError
 }
 
 // Do APIコール実施
