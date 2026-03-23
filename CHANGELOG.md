@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.5.0](https://github.com/sacloud/webaccel-api-go/compare/v1.4.1...v1.5.0) - 2026-03-23
+- use endpoint config from saclient profile and env by @to-shoji in https://github.com/sacloud/webaccel-api-go/pull/96
+
 ## [v1.4.1](https://github.com/sacloud/webaccel-api-go/compare/v1.4.0...v1.4.1) - 2026-01-09
 - go: bump github.com/sacloud/saclient-go from 0.2.4 to 0.2.6 by @dependabot[bot] in https://github.com/sacloud/webaccel-api-go/pull/84
 - fix: use default http.Client by @yamamoto-febc in https://github.com/sacloud/webaccel-api-go/pull/86
