@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.5.1](https://github.com/sacloud/webaccel-api-go/compare/v1.5.0...v1.5.1) - 2026-08-03
+
+- update README for repository transition by @shyouhei in https://github.com/sacloud/webaccel-api-go/pull/100
+
 ## [v1.5.0](https://github.com/sacloud/webaccel-api-go/compare/v1.4.1...v1.5.0) - 2026-03-23
 - use endpoint config from saclient profile and env by @to-shoji in https://github.com/sacloud/webaccel-api-go/pull/96
 
